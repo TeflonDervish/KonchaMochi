@@ -5,12 +5,22 @@ import numpy as np
 def f(x, y):
     return np.sqrt(x**2 + y**2)
 
-# Область интегрирования S (круг с радиусом 2, так как 2^2 = 4)
-def S(x, y):
-    return x**2 + y**2 <= 4
+# Вычисление двойного интеграла
+result, error = integrate.dblquad(f, -2, 2, lambda x: -np.sqrt(4 - x**2), lambda x: np.sqrt(4 - x**2))
+
+# Вывод результата
+print("Значение двойного интеграла:", result)
+print("Ошибка:", error)
+
+
+
+# Пределы интегрирования
+x_lower, x_upper = -2, 2
+y_lower = lambda x: -np.sqrt(4 - x**2)
+y_upper = lambda x: np.sqrt(4 - x**2)
 
 # Вычисление двойного интеграла
-result, error = integrate.nquad(f, [[-2, 2], [-2, 2]], S)
+result, error = integrate.quad(lambda x: integrate.quad(lambda y: f(x, y), y_lower(x), y_upper(x))[0], x_lower, x_upper)
 
 # Вывод результата
 print("Значение двойного интеграла:", result)
