@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from scipy.optimize import fsolve
+from scipy.optimize import fsolve, minimize
 import numpy as np
 import sympy as sp
 
@@ -17,34 +17,40 @@ def F(x_val):
     # Преобразование уравнения в функцию
     function = sp.lambdify((x, y), equation, 'numpy')
 
-    # Начальное приближение для численного метода
-    initial = [1, 1]
-
     # Численное решение
-    solution = fsolve(lambda у: function(x_val, у)[0], 1)
+    solution = fsolve(lambda у: function(x_val, у)[0], 0)
 
-    return x_val, solution[0]
+    return solution[0]
 
-# Пример использования функции
-значение_x = 2
-результат = F(значение_x)
-print(f"x = {результат[0]}, y = {результат[1]}")
+# Минимизация методом градиентного спуска
+result= minimize(F, 0, method='BFGS')
+print("Gradient Descent")
+print(f"F(xmin,ymin) = {f(result.x[0], result.fun)}")
+print("y'(xmin)=: ", result.fun)
+print("X value: ", result.x[0])
+
+# Минимизация методом Нелдера-Мида
+result= minimize(F, 0, method='Nelder-Mead')
+print("\nNelder-Mead")
+print(f"F(xmin,ymin) = {f(result.x[0], result.fun)}")
+print("y'(xmin)=: ", result.fun)
+print("X value: ", result.x[0])
 
 
+# Иницализация значений для графика
+x_values = np.linspace(-0.5, 0.5, 100)
+y_values = []
 
+# Значение Y для функции
+for x_val in x_values:
+    result = F(x_val)
+    y_values.append(result)
 
-# Создание сетки точек
-x_vals = np.linspace(-10, 10, 400)
-y_vals = np.linspace(-10, 10, 400)
-X, Y = np.meshgrid(x_vals, y_vals)
-
-# Вычисление значений F(x, y)
-Z = f(X, Y)
-
-# Построение графика
-plt.contour(X, Y, Z, levels=[0], colors='r')
+# Отрисовка графика
+plt.plot(x_values, y_values, label='Implicit Equation')
 plt.xlabel('x')
 plt.ylabel('y')
-plt.title('График уравнения F(x, y) = 0')
+plt.title('Graph of the Implicit Equation')
+plt.legend()
 plt.grid(True)
 plt.show()
