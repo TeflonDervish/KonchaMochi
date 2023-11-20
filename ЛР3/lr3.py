@@ -1,12 +1,9 @@
-from sympy import symbols, cos, integrate
 from scipy.integrate import quad
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize
 import numpy as np
 from scipy.integrate import quad
-from scipy.optimize import minimize_scalar
-
 
 # Определение функции f(x, alpha)
 def f(x, alpha):

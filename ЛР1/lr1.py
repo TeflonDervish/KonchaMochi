@@ -1,46 +1,50 @@
-from scipy.optimize import minimize
-import numpy as np
 import matplotlib.pyplot as plt
+from scipy.optimize import fsolve
+import numpy as np
+import sympy as sp
 
-# Заданная функция f(x, y)
-def f(params):
-    x, y = params
-    return 3 * x ** 4 * y ** 5 + np.exp(7*x - 4*y) - 4 * x ** 5 - 2 * y ** 4
 
-# Ограничение уравнением F(x, y) = 0 (пример: окружность радиуса 1)
-def constraint(params):
-    x, y = params
-    return x**2 + y**2 - 1
+def f(x, y):
+    return 3 * x**4 * y**5 + sp.exp(7 * x - 4 * y) - 4 * x**5 - 2 * y**4
 
-# Начальные значения параметров x и y
-initial_params = [0.0, 0.0]
+def F(x_val):
+    # Определение символов
+    x, y = sp.symbols('x y')
 
-# Определение ограничений
-constraints = ({'type': 'eq', 'fun': constraint})
+    # Неявное уравнение
+    equation = 3 * x**4 * y**5 + sp.exp(7 * x - 4 * y) - 4 * x**5 - 2 * y**4
 
-# Используем метод оптимизации для поиска минимума
-result = minimize(f, initial_params, constraints=constraints, method='SLSQP')
+    # Преобразование уравнения в функцию
+    function = sp.lambdify((x, y), equation, 'numpy')
 
-# Получение оптимальных значений x и y
-optimal_params = result.x
+    # Начальное приближение для численного метода
+    initial = [1, 1]
 
-# Вывод результата
-print("Оптимальные значения x и y:", optimal_params)
-print("Минимум функции:", result.fun)
+    # Численное решение
+    solution = fsolve(lambda у: function(x_val, у)[0], 1)
 
-# Визуализация функции и уравнения F(x, y) = 0
-x_vals = np.linspace(-2, 2, 100)
-y_vals = np.linspace(-2, 2, 100)
+    return x_val, solution[0]
+
+# Пример использования функции
+значение_x = 2
+результат = F(значение_x)
+print(f"x = {результат[0]}, y = {результат[1]}")
+
+
+
+
+# Создание сетки точек
+x_vals = np.linspace(-10, 10, 400)
+y_vals = np.linspace(-10, 10, 400)
 X, Y = np.meshgrid(x_vals, y_vals)
-Z_f = f([X, Y])
-Z_F = constraint([X, Y])
 
-# Построение графиков
-plt.contour(X, Y, Z_F, levels=[0], colors='r', label='F(x, y) = 0')
-plt.plot(optimal_params[0], optimal_params[1], 'bo', label='Минимум')
+# Вычисление значений F(x, y)
+Z = f(X, Y)
 
+# Построение графика
+plt.contour(X, Y, Z, levels=[0], colors='r')
 plt.xlabel('x')
 plt.ylabel('y')
-plt.title('Функция f(x, y) и условие F(x, y) = 0')
-plt.legend()
+plt.title('График уравнения F(x, y) = 0')
+plt.grid(True)
 plt.show()
