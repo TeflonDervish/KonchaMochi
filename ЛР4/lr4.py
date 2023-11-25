@@ -23,26 +23,32 @@ z = np.array([[115.6189270,  112.2971039,  132.5746918,  164.6069183,  204.53768
 # Определение функции, которую будем минимизировать
 def objective_function(params):
     a, b = params
-    predicted_values = a * x[:, np.newaxis] + b * y[:, np.newaxis]**4
-    error = z - predicted_values
-    return np.sum(error**2)
+    error_val = 0
+    for i in range(len(x)):
+        for j in range(len(y)):
+            error_val += ((a * x[i] + b * y[j] ** 4) - z[i][j]) ** 2
+    
+    return error_val
 
 # Начальные значения параметров a и b
 initial_params = [1.0, 1.0]
 
 # Минимизация функции для нахождения оптимальных параметров
-result = minimize(objective_function, initial_params, method='Nelder-Mead')
+result1 = minimize(objective_function, initial_params, method='BFGS')
+
+result2 = minimize(objective_function, initial_params, method='Nelder-Mead')
 
 # Получение оптимальных значений параметров a и b
-optimal_params = result.x
-
+optimal_params1 = result1.x
+optimal_params2 = result2.x
 # Вывод результата
-print("Оптимальные значения параметров a и b:", optimal_params)
+print("Optimal values a and b:", optimal_params1)
+print("Optimal values a and b:", optimal_params2)
 
 
 
 def func_for_plot(x, y):
-    return optimal_params[0]*x + optimal_params[1]*(y**4)
+    return optimal_params1[0]*x + optimal_params1[1]*(y**4)
 
 
 a_values = np.linspace(2, 6, 100)
@@ -69,6 +75,3 @@ ax.set_zlabel('Значение функции')
 ax.set_title('Зависимость функции от параметров a и b')
 
 plt.show()
-
-
-print(objective_function(optimal_params))
