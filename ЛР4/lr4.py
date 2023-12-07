@@ -42,8 +42,12 @@ result2 = minimize(objective_function, initial_params, method='Nelder-Mead')
 optimal_params1 = result1.x
 optimal_params2 = result2.x
 # Вывод результата
+print("Gradient descent")
 print("Optimal values a and b:", optimal_params1)
+print("Function minimum:", objective_function(optimal_params1))
+print("\nMethod Nelder-Mead")
 print("Optimal values a and b:", optimal_params2)
+print("Function minimum:", objective_function(optimal_params2))
 
 
 
@@ -68,6 +72,77 @@ ax.plot_surface(A, B, Z, cmap='viridis', alpha=0.5, label='Z')
 
 x_mesh, y_mesh = np.meshgrid(x, y)
 ax.scatter(x_mesh.flatten(), y_mesh.flatten(), z.flatten(), color='red', label='Заданные точки')
+
+ax.set_xlabel('Параметр a')
+ax.set_ylabel('Параметр b')
+ax.set_zlabel('Значение функции')
+ax.set_title('Зависимость функции от параметров a и b')
+
+plt.show()
+
+x1 = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9])  # Пример значений x
+y1 = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9])  # Пример значений y
+z1 = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0],])  # Пример значений z_ij
+
+
+
+def objective_function1(params):
+        a, b = params
+        error_val = 0
+        for i in range(len(x1)):
+            for j in range(len(y1)):
+                error_val += ((a * x1[i] + b * y1[j] ** 4) - z1[i][j]) ** 2
+        
+        return error_val
+
+
+
+initial_params = [1.0, 1.0]
+
+    # Минимизация функции для нахождения оптимальных параметров
+result1 = minimize(objective_function1, initial_params, method='BFGS')
+
+result2 = minimize(objective_function1, initial_params, method='Nelder-Mead')
+
+    # Получение оптимальных значений параметров a и b
+optimal_params1 = result1.x
+optimal_params2 = result2.x
+    # Вывод результата
+print("\nGradient descent")
+print("Optimal values a and b:", optimal_params1)
+print("\nMethod Nelder-Mead")
+print("Optimal values a and b:", optimal_params2)
+
+
+def func_for_plot1(x, y):
+        return optimal_params1[0]*x + optimal_params1[1]*(y**4)
+
+
+a_values = np.linspace(0, 10, 100)
+b_values = np.linspace(0, 10, 100)
+
+# Вычисление значений функции для каждой комбинации a и b
+A, B = np.meshgrid(a_values, b_values)
+Z = np.zeros_like(A)
+for i in range(len(a_values)):
+        for j in range(len(b_values)):
+            Z[i, j] = func_for_plot1(A[i, j], B[i, j])
+
+    # Построение 3D-графика
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.plot_surface(A, B, Z, cmap='viridis', alpha=0.5, label='Z')
+
+x_mesh, y_mesh = np.meshgrid(x1, y1)
+ax.scatter(x_mesh.flatten(), y_mesh.flatten(), z1.flatten(), color='red', label='Заданные точки')
 
 ax.set_xlabel('Параметр a')
 ax.set_ylabel('Параметр b')
